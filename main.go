@@ -38,7 +38,7 @@ func updateEntries(trackerSvc trackers.TrackerApi, syncSvc sync.SyncApi, project
 func main() {
 	app := cli.NewApp()
 	app.Version = "0.1.0"
-	app.Usage = "toogl-sync sync -period 1W"
+	app.Description = "Tiny service to sync time entries from toggl to jira"
 	app.Name = "toggl-sync"
 	app.Copyright = "TimeMate © 2021"
 
