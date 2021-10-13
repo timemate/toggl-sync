@@ -1,0 +1,12 @@
+tracker:
+  - type: toggl
+    token: "token-from-toggl"
+
+# places to sync time entries with
+sync:
+  - type: jira
+    url: https://customer-host.atlassian.net
+    login: login@email.com
+    token: "token-from-jira"
+    projects:
+      - DEV
