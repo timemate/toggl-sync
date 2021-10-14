@@ -1,16 +1,28 @@
 # toggl-sync
-A tool for syncing toggl time entries with Jira
+A tiny cli command/daemon for syncing toggl time entries with Jira
 
-## Toggl
+## Installation
+
+Install the app via [brew](https://brew.sh/) package manager.
+
+```shell
+brew tap timemate/tap
+brew install toggl-sync
+```
+
+## Configuration
+
+### Toggl
 1. Login to your toggl account
 2. Visit https://track.toggl.com/profile
 3. Find API token
 
-## Jira
+### Jira
 1. Login to your atlassian account
 2. Visit https://id.atlassian.com/manage-profile/security
 3. Create new API token with a name: toggl-sync
 
+### Config
 Create a file in `~/toggl-sync/config.yaml`
 ```yaml
 tracker:
@@ -26,3 +38,21 @@ sync:
     projects:
       - DEV
 ```
+
+## Run the app
+
+### One time run
+
+```
+toggl-sync sync -period 2w
+```
+
+Where `-period` specifies the period of time from current moment to sync. In this example `2w` - 2 past weeks.
+
+### As a service
+
+```
+toggl-sync sync -period 1d --service
+```
+
+Where `--service` allows program to work as a daemon, it will repeatedly sync time entries every 1 day (`1d`).
