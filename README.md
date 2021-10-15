@@ -23,7 +23,7 @@ brew install toggl-sync
 3. Create new API token with a name: toggl-sync
 
 ### Config
-Create a file in `~/toggl-sync/config.yaml`
+Create a file in `~/.toggl-sync/config.yaml`
 ```yaml
 tracker:
   - type: toggl
@@ -36,8 +36,11 @@ sync:
     login: login@email.com
     token: "token-from-jira"
     projects:
+      - DO
       - DEV
 ```
+
+- `projects` it's a list of project keys in Jira.
 
 ## Run the app
 
