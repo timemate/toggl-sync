@@ -18,6 +18,7 @@ func init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("$HOME/.toggl-sync")
+	viper.AddConfigPath("./config")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
