@@ -44,6 +44,15 @@ sync:
 
 ## Run the app
 
+### Brew service
+
+```
+brew services start toggl-sync
+```
+The program will start on system start up.
+
+Find logs in here `tail -f $(brew --prefix)/var/log/toggl-sync/toggl-sync.log`
+
 ### One time run
 
 ```
