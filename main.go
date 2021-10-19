@@ -49,8 +49,7 @@ func main() {
 			Usage: "Sync time entries from timers with task trackers",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "period",
-					Value: "1d",
+					Name: "period",
 				},
 				cli.BoolFlag{
 					Name: "service",
@@ -58,13 +57,26 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				service := c.Bool("service")
-				duration, err := utils.ParseDuration(c.String("period"))
+				t := viper.GetString("period.timeframe")
+				p := c.String("period")
+				if p != "" {
+					t = p
+				}
+				lookupTimeframe, err := utils.ParseDuration(t)
+				if err != nil {
+					log.Fatal(err)
+				}
+				e := viper.GetString("period.every")
+				if e == "" {
+					e = t
+				}
+				every, err := utils.ParseDuration(e)
 				if err != nil {
 					log.Fatal(err)
 				}
 
 				end := time.Now()
-				start := end.Add(-duration)
+				start := end.Add(-lookupTimeframe)
 
 				tr := viper.Get("tracker").([]interface{})
 				trackerSvc, err := trackers.NewTogglTracker((tr[0]).(map[interface{}]interface{}))
@@ -84,7 +96,7 @@ func main() {
 					log.Fatal(err)
 				}
 				if service {
-					ticker := time.NewTicker(duration)
+					ticker := time.NewTicker(every)
 					quit := make(chan error, 1)
 					go func() {
 						for {

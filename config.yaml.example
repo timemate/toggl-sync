@@ -2,6 +2,10 @@ tracker:
   - type: toggl
     token: "token-from-toggl"
 
+period:
+  timeframe: 2w
+  every: 1d
+
 # places to sync time entries with
 sync:
   - type: jira

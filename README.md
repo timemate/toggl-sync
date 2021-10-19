@@ -29,6 +29,10 @@ tracker:
   - type: toggl
     token: "token-from-toggl"
 
+period:
+  timeframe: 2w
+  every: 1d
+
 # places to sync time entries with
 sync:
   - type: jira
@@ -40,6 +44,8 @@ sync:
       - DEV
 ```
 
+- `timeframe` - look for timeframe in the past for new entries
+- `every` - for `--service` mode, how often to repeat sync
 - `projects` it's a list of project keys in Jira.
 
 ## Run the app
