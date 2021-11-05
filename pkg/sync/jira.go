@@ -1,7 +1,8 @@
 package sync
 
 import (
-	"fmt"
+	"log"
+
 	"github.com/andygrunwald/go-jira"
 	"godep.io/timemate/pkg/trackers"
 )
@@ -48,9 +49,6 @@ func findWorklog(worklogs []jira.WorklogRecord, entry trackers.TimeEntry) *jira.
 
 func (ji *JiraSync) Sync(tasks []Task) (err error) {
 	for _, t := range tasks {
-		//is, _, err := ji.api.Issue.Get(t.Id, &jira.GetQueryOptions{
-		//	Fields: "worklog, worklogs",
-		//})
 		worklog, _, err := ji.api.Issue.GetWorklogs(t.Id, jira.WithQueryOptions(&jira.AddWorklogQueryOptions{
 			Expand: "properties",
 		}))
@@ -61,6 +59,10 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			w := findWorklog(worklog.Worklogs, e)
 			st := jira.Time(e.Start())
 			diff := e.Stop().Sub(e.Start())
+			// do not perform update if we have the same values for time/description
+			if w != nil && w.Comment == e.Description() && int(diff.Seconds()) == w.TimeSpentSeconds {
+				continue
+			}
 			record := &jira.WorklogRecord{
 				Comment:          e.Description(),
 				Started:          &st,
@@ -79,7 +81,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			} else {
 				_, _, err = ji.api.Issue.AddWorklogRecord(t.Id, record)
 			}
-			fmt.Printf("Synchronized time entry of %s for task %s\n", diff, t.Id)
+			log.Printf("Synchronized time entry of %s for task %s\n", diff, t.Id)
 		}
 	}
 	return err

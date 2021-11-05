@@ -27,7 +27,7 @@ func init() {
 }
 
 func updateEntries(trackerSvc trackers.TrackerApi, syncSvc sync.SyncApi, projects []interface{}, start time.Time, end time.Time) error {
-	fmt.Printf("Update entries for duration %s\n", end.Sub(start))
+	log.Printf("Update entries for duration %s\n", end.Sub(start))
 	entries, err := trackerSvc.GetTimeEntries(start, end)
 	if err != nil {
 		return err
@@ -75,6 +75,8 @@ func main() {
 					log.Fatal(err)
 				}
 
+				log.Printf("Sync started with config period: %s, every: %s", lookupTimeframe, every)
+
 				end := time.Now()
 				start := end.Add(-lookupTimeframe)
 
@@ -95,14 +97,21 @@ func main() {
 				if err != nil {
 					log.Fatal(err)
 				}
+				lastRun := time.Now().Format("2006-01-02T15:04:05-0700")
 				if service {
-					ticker := time.NewTicker(every)
+					ticker := time.NewTicker(time.Second)
 					quit := make(chan error, 1)
 					go func() {
 						for {
 							select {
 							case <-ticker.C:
-								err = updateEntries(trackerSvc, syncSvc, (jiraConf["projects"]).([]interface{}), start, end)
+								nowFormatted := time.Now().Format("2006-01-02T15:04:05-0700")
+								now, err := time.Parse("2006-01-02T15:04:05-0700", nowFormatted)
+								last, err := time.Parse("2006-01-02T15:04:05-0700", lastRun)
+								if now.Sub(last).Seconds() > every.Seconds() {
+									err = updateEntries(trackerSvc, syncSvc, (jiraConf["projects"]).([]interface{}), start, end)
+									lastRun = time.Now().Format("2006-01-02T15:04:05-0700")
+								}
 								if err != nil {
 									quit <- err
 								}
