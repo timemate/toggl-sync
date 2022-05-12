@@ -1,5 +1,5 @@
 # toggl-sync
-A tiny cli command/daemon for syncing toggl time entries with Jira
+A tiny cli command/daemon for syncing [toggl](https://toggl.com/) time entries with [Jira](https://www.atlassian.com/software/jira)
 
 ## Installation
 
