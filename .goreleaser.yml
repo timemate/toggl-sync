@@ -79,6 +79,7 @@ brews:
     folder: Formula
     homepage: https://github.com/timemate
     description: Toggl sync util
+    license: "MIT"
     install: |
       bin.install "toggl-sync"
       output = Utils.popen_read("#{bin}/toggl-sync completion bash")
@@ -90,3 +91,26 @@ brews:
       prefix.install_metafiles
     test: |
       system "#{bin}/toggl-sync --version"
+    plist: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+          <key>Label</key>
+          <string>#{plist_name}</string>
+          <key>ProgramArguments</key>
+          <array>
+          <string>#{bin}/toggl-sync</string>
+          <string>sync</string>
+          <string>--service</string>
+          </array>
+          <key>RunAtLoad</key>
+          <true/>
+          <key>KeepAlive</key>
+          <true/>
+          <key>StandardErrorPath</key>
+          <string>#{var}/log/toggl-sync/toggl-sync.log</string>
+          <key>StandardOutPath</key>
+          <string>#{var}/log/toggl-sync/toggl-sync.log</string>
+        </dict>
+      </plist>
