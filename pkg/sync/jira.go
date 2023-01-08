@@ -49,6 +49,7 @@ func findWorklog(worklogs []jira.WorklogRecord, entry trackers.TimeEntry) *jira.
 
 func (ji *JiraSync) Sync(tasks []Task) (err error) {
 	for _, t := range tasks {
+		log.Printf("Processing toggl task %s\n", t.Id)
 		worklog, _, err := ji.api.Issue.GetWorklogs(t.Id, jira.WithQueryOptions(&jira.AddWorklogQueryOptions{
 			Expand: "properties",
 		}))

@@ -36,12 +36,19 @@ func updateEntries(trackerSvc trackers.TrackerApi, syncSvc sync.SyncApi, project
 	return syncSvc.Sync(sync.GroupByTask(projects, entries))
 }
 
+var (
+	// Populated by goreleaser during build
+	version = "master"
+	commit  = "?"
+	date    = ""
+)
+
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.1.0"
+	app.Version = fmt.Sprintf("%s %s %s", version, commit, date)
 	app.Description = "Tiny service to sync time entries from toggl to jira"
 	app.Name = "toggl-sync"
-	app.Copyright = "TimeMate © 2021"
+	app.Copyright = "TimeMate © 2021-2023"
 
 	app.Commands = []cli.Command{
 		{
