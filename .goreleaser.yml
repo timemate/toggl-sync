@@ -1,0 +1,92 @@
+---
+project_name: toggl-sync
+
+release:
+  github:
+    owner: timemate
+    name: toggl-sync
+
+builds:
+  - binary: toggl-sync
+    goos:
+      - darwin
+      - windows
+      - linux
+      - freebsd
+      - netbsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+      - 386
+      - ppc64le
+      - s390x
+      - mips64
+      - mips64le
+      - riscv64
+    goarm:
+      - 6
+      - 7
+    gomips:
+      - hardfloat
+    env:
+      - CGO_ENABLED=0
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: freebsd
+        goarch: arm64
+    main: ./
+    flags:
+      - -trimpath
+    ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+
+archives:
+  - format: tar.gz
+    wrap_in_directory: true
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: '{{ .ProjectName }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    files:
+      - LICENSE
+      - README.md
+
+snapshot:
+  name_template: SNAPSHOT-{{ .Commit }}
+
+checksum:
+  name_template: '{{ .ProjectName }}-{{ .Version }}-checksums.txt'
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '(?i)^docs?:'
+      - '(?i)^docs\([^:]+\):'
+      - '(?i)^docs\[[^:]+\]:'
+      - '^tests?:'
+      - '(?i)^dev:'
+      - '^build\(deps\): bump .* in /docs \(#\d+\)'
+      - '^build\(deps\): bump .* in /\.github/peril \(#\d+\)'
+      - Merge pull request
+      - Merge branch
+
+brews:
+  - tap:
+      owner: timemate
+      name: homebrew-tap
+    folder: Formula
+    homepage: https://github.com/timemate
+    description: Toggl sync util
+    install: |
+      bin.install "toggl-sync"
+      output = Utils.popen_read("#{bin}/toggl-sync completion bash")
+      (bash_completion/"toggl-sync").write output
+      output = Utils.popen_read("#{bin}/toggl-sync completion zsh")
+      (zsh_completion/"_toggl-sync").write output
+      output = Utils.popen_read("#{bin}/toggl-sync completion fish")
+      (fish_completion/"toggl-sync.fish").write output
+      prefix.install_metafiles
+    test: |
+      system "#{bin}/toggl-sync --version"
