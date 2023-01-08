@@ -59,14 +59,16 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			w := findWorklog(worklog.Worklogs, e)
 			st := jira.Time(e.Start())
 			diff := e.Stop().Sub(e.Start())
+			// jira allows to save the minimum of 1m
+			secondsToSave := int(diff.Seconds()) - (int(diff.Seconds()) % 60)
 			// do not perform update if we have the same values for time/description
-			if w != nil && w.Comment == e.Description() && int(diff.Seconds()) == w.TimeSpentSeconds {
+			if w != nil && w.Comment == e.Description() && secondsToSave == w.TimeSpentSeconds {
 				continue
 			}
 			record := &jira.WorklogRecord{
 				Comment:          e.Description(),
 				Started:          &st,
-				TimeSpentSeconds: int(diff.Seconds()),
+				TimeSpentSeconds: secondsToSave,
 				Properties: []jira.EntityProperty{
 					{
 						Key: e.Source(),
@@ -81,7 +83,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			} else {
 				_, _, err = ji.api.Issue.AddWorklogRecord(t.Id, record)
 			}
-			log.Printf("Synchronized time entry of %s for task %s\n", diff, t.Id)
+			log.Printf("Synchronized time entry \"%s\" of %s for task %s\n", e.Description(), diff, t.Id)
 		}
 	}
 	return err
