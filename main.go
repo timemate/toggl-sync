@@ -45,7 +45,7 @@ var (
 
 func main() {
 	app := cli.NewApp()
-	app.Version = fmt.Sprintf("%s %s %s", version, commit, date)
+	app.Version = fmt.Sprintf("%s (%s; %s)", version, commit, date)
 	app.Description = "Tiny service to sync time entries from toggl to jira"
 	app.Name = "toggl-sync"
 	app.Copyright = "TimeMate © 2021-2023"
