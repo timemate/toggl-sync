@@ -10,6 +10,13 @@ brew tap timemate/tap
 brew install toggl-sync
 ```
 
+Re-install newer version of the library
+```shell
+brew update && \
+  brew reinstall toggl-sync && \
+  brew services restart toggl-sync
+```
+
 ## Configuration
 
 ### Toggl
