@@ -1,4 +1,10 @@
-# toggl-sync
+# toggl-sync: Power tools for synchonizing time reports between different platforms
+
+![Latest GitHub release](https://img.shields.io/github/release/timemate/toggl-sync.svg)
+![GitHub stars](https://img.shields.io/github/stars/timemate/toggl-sync.svg?label=github%20stars)
+![Homebrew downloads](https://img.shields.io/homebrew/installs/dy/toggl-sync?label=macOS%20installs)
+[![Go implementation (CI)](https://github.com/timemate/toggl-sync/workflows/Go%20implementation%20(CI)/badge.svg)](https://github.com/timemate/toggl-sync/actions?query=workflow%3A"Go+implementation+(CI)")
+
 A tiny cli command/daemon for syncing [toggl](https://toggl.com/) time entries with [Jira](https://www.atlassian.com/software/jira)
 
 ## Installation
