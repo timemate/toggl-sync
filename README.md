@@ -1,4 +1,4 @@
-# toggl-sync: Power tools for synchonizing time reports between different platforms
+# toggl-sync: Synchronize time reports with ease
 
 ![Latest GitHub release](https://img.shields.io/github/release/timemate/toggl-sync.svg)
 ![GitHub stars](https://img.shields.io/github/stars/timemate/toggl-sync.svg?label=github%20stars)
