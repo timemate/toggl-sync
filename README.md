@@ -63,7 +63,7 @@ sync:
 
 ## Run the app
 
-### Brew service
+### Brew background service
 
 ```
 brew services start toggl-sync
