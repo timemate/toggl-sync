@@ -54,6 +54,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			Expand: "properties",
 		}))
 		if err != nil {
+			log.Printf("Error occured: %s\n", err)
 			continue
 		}
 		for _, e := range t.entries {
@@ -64,6 +65,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			secondsToSave := int(diff.Seconds()) - (int(diff.Seconds()) % 60)
 			// do not perform update if we have the same values for time/description
 			if w != nil && w.Comment == e.Description() && secondsToSave == w.TimeSpentSeconds {
+				log.Printf("Time entry \"%s\" of %s for task %s is unchanged. Skipping update...\n", e.Description(), diff, t.Id)
 				continue
 			}
 			record := &jira.WorklogRecord{
