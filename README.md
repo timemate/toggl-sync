@@ -5,7 +5,11 @@
 ![Homebrew downloads](https://img.shields.io/homebrew/installs/dy/toggl-sync?label=macOS%20installs)
 [![Go implementation (CI)](https://github.com/timemate/toggl-sync/workflows/Go%20implementation%20(CI)/badge.svg)](https://github.com/timemate/toggl-sync/actions?query=workflow%3A"Go+implementation+(CI)")
 
-A tiny cli command/daemon for syncing [toggl](https://toggl.com/) time entries with [Jira](https://www.atlassian.com/software/jira)
+**toggl-sync** is a tiny CLI command/daemon for syncing [Toggl](https://toggl.com/) time entries with [Jira](https://www.atlassian.com/software/jira) written in [Go](https://go.dev/) and distributed with [HomeBrew](https://brew.sh/).
+
+This is the first implementation of the bigger concept of time-tracking, syncing, and reporting among third-party platforms.
+
+Find the full concept overview in [TimeMate docs](https://github.com/timemate).
 
 ## Installation
 
