@@ -2,6 +2,16 @@ package trackers
 
 import "time"
 
+type Client interface {
+	Id() string
+	Name() string
+}
+
+type Project interface {
+	Id() string
+	Name() string
+}
+
 type TimeEntry interface {
 	Id() string
 	Description() string
@@ -9,6 +19,8 @@ type TimeEntry interface {
 	Stop() time.Time
 	Tags() []string
 	Source() string
+	Client() Client
+	Project() Project
 }
 
 type TrackerApi interface {
