@@ -2,6 +2,30 @@ package trackers
 
 import "time"
 
+type trackedTimeClient struct {
+	id   string
+	name string
+}
+
+func (t trackedTimeClient) Id() string {
+	return t.id
+}
+func (t trackedTimeClient) Name() string {
+	return t.name
+}
+
+type trackedTimeProject struct {
+	id   string
+	name string
+}
+
+func (t trackedTimeProject) Id() string {
+	return t.id
+}
+func (t trackedTimeProject) Name() string {
+	return t.name
+}
+
 type trackedTime struct {
 	id          string
 	description string
@@ -9,6 +33,8 @@ type trackedTime struct {
 	stop        time.Time
 	tags        []string
 	source      string
+	client      Client
+	project     Project
 }
 
 func (t trackedTime) Tags() []string {
@@ -33,4 +59,12 @@ func (t trackedTime) Id() string {
 
 func (t trackedTime) Source() string {
 	return t.source
+}
+
+func (t trackedTime) Client() Client {
+	return t.client
+}
+
+func (t trackedTime) Project() Project {
+	return t.project
 }

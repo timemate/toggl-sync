@@ -45,6 +45,8 @@ Create a file in `~/.toggl-sync/config.yaml`
 tracker:
   - type: toggl
     token: "token-from-toggl"
+#    projects:  # <-- use this section to filter projects
+#      - 174942904
 
 period:
   timeframe: 2w
