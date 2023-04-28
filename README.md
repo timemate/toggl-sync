@@ -9,6 +9,8 @@
 
 This is the first implementation of the bigger concept of time-tracking, syncing, and reporting among third-party platforms.
 
+In active development of [v1](https://github.com/timemate/toggl-sync/tree/branch-v1) of TimeMate
+
 Find the full concept overview in [TimeMate docs](https://github.com/timemate).
 
 ## Installation
