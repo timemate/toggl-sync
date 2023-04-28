@@ -1,9 +1,12 @@
-package trackers
+package main
 
 import (
-	"godep.io/timemate/pkg/utils"
 	"strconv"
 	"time"
+
+	"godep.io/timemate/pkg/config"
+	"godep.io/timemate/pkg/time_tracker"
+	"godep.io/timemate/pkg/utils"
 
 	"github.com/andreaskoch/togglapi"
 	"github.com/andreaskoch/togglapi/model"
@@ -18,21 +21,21 @@ type TogglTracker struct {
 
 const baseHost = "https://api.track.toggl.com/api/v8"
 
-func NewTogglTracker(params map[interface{}]interface{}) (*TogglTracker, error) {
-	token := (params["token"]).(string)
+func NewTogglTracker(config config.PluginConfig) (*TogglTracker, error) {
+	token := config.Config["token"]
 	var projects []string
-	p, ok := (params["projects"]).([]interface{})
-	if ok {
-		projects = make([]string, 0)
-		for _, pp := range p {
-			switch v := pp.(type) {
-			case int:
-				projects = append(projects, strconv.Itoa(v))
-			case string:
-				projects = append(projects, v)
-			}
-		}
-	}
+	//p, ok := (params["projects"]).([]interface{})
+	//if ok {
+	//	projects = make([]string, 0)
+	//	for _, pp := range p {
+	//		switch v := pp.(type) {
+	//		case int:
+	//			projects = append(projects, strconv.Itoa(v))
+	//		case string:
+	//			projects = append(projects, v)
+	//		}
+	//	}
+	//}
 	return &TogglTracker{
 		TimeEntryAPI: togglapi.NewTimeEntryAPI(baseHost, token),
 		ProjectAPI:   togglapi.NewProjectAPI(baseHost, token),
@@ -41,22 +44,22 @@ func NewTogglTracker(params map[interface{}]interface{}) (*TogglTracker, error) 
 	}, nil
 }
 
-func getProjectClientByTimeEntry(clients map[string]model.Client, projects map[string]model.Project, entry model.TimeEntry) (client Client, project Project) {
+func getProjectClientByTimeEntry(clients map[string]model.Client, projects map[string]model.Project, entry model.TimeEntry) (client time_tracker.IClient, project time_tracker.IProject) {
 	p, ok := projects[strconv.Itoa(entry.Pid)]
 	if !ok {
 		return client, project
 	}
-	project = &trackedTimeProject{
-		id:   strconv.Itoa(p.ID),
-		name: p.Name,
+	project = &time_tracker.Project{
+		Id:   strconv.Itoa(p.ID),
+		Name: p.Name,
 	}
 	c, ok := clients[strconv.Itoa(p.ClientID)]
 	if !ok {
 		return client, project
 	}
-	client = &trackedTimeClient{
-		id:   strconv.Itoa(c.ID),
-		name: c.Name,
+	client = &time_tracker.Client{
+		Id:   strconv.Itoa(c.ID),
+		Name: c.Name,
 	}
 	return client, project
 }
@@ -88,7 +91,7 @@ func (tg *TogglTracker) getClientsAndProjects() (clientsMap map[string]model.Cli
 	return clientsMap, projectsMap, err
 }
 
-func (tg *TogglTracker) GetTimeEntries(start time.Time, end time.Time) ([]TimeEntry, error) {
+func (tg *TogglTracker) GetTimeEntries(start time.Time, end time.Time) ([]time_tracker.ITimeEntry, error) {
 	entries, err := tg.TimeEntryAPI.GetTimeEntries(start, end)
 	if err != nil {
 		return nil, err
@@ -99,21 +102,21 @@ func (tg *TogglTracker) GetTimeEntries(start time.Time, end time.Time) ([]TimeEn
 		return nil, err
 	}
 
-	r := make([]TimeEntry, 0)
+	r := make([]time_tracker.ITimeEntry, 0)
 	for _, e := range entries {
 		client, project := getProjectClientByTimeEntry(clientsMap, projectsMap, e)
-		if len(tg.projects) > 0 && !utils.InArray[string](tg.projects, project.Id()) {
+		if len(tg.projects) > 0 && !utils.InArray[string](tg.projects, project.GetId()) {
 			continue
 		}
-		r = append(r, trackedTime{
-			id:          strconv.Itoa(e.ID),
-			description: e.Description,
-			start:       e.Start,
-			stop:        e.Stop,
-			tags:        e.Tags,
-			source:      "toggl",
-			client:      client,
-			project:     project,
+		r = append(r, time_tracker.TimeEntry{
+			Id:          strconv.Itoa(e.ID),
+			Description: e.Description,
+			Start:       e.Start,
+			Stop:        e.Stop,
+			Tags:        e.Tags,
+			Source:      "toggl",
+			Client:      client,
+			Project:     project,
 		})
 	}
 	return r, nil

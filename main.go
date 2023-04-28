@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"godep.io/timemate/pkg/sync"
-	"godep.io/timemate/pkg/trackers"
 	"godep.io/timemate/pkg/utils"
 
 	"github.com/spf13/viper"
@@ -26,7 +25,7 @@ func init() {
 	}
 }
 
-func updateEntries(trackerSvc trackers.TrackerApi, syncSvc sync.SyncApi, projects []interface{}, start time.Time, end time.Time) error {
+func updateEntries(trackerSvc time_tracker.TrackerApi, syncSvc sync.SyncApi, projects []interface{}, start time.Time, end time.Time) error {
 	log.Printf("Update entries for duration %s\n", end.Sub(start))
 	entries, err := trackerSvc.GetTimeEntries(start, end)
 	if err != nil {
@@ -88,7 +87,7 @@ func main() {
 				start := end.Add(-lookupTimeframe)
 
 				tr := viper.Get("tracker").([]interface{})
-				trackerSvc, err := trackers.NewTogglTracker((tr[0]).(map[interface{}]interface{}))
+				trackerSvc, err := time_tracker.NewTogglTracker((tr[0]).(map[interface{}]interface{}))
 				if err != nil {
 					log.Fatal(err)
 				}

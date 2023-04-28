@@ -93,3 +93,11 @@ toggl-sync sync -period 1d --service
 ```
 
 Where `--service` allows program to work as a daemon, it will repeatedly sync time entries every 1 day (`1d`).
+
+## Development
+
+### Build proto
+
+```shell
+protoc -I proto/ proto/*.proto --go_out=plugins=grpc:.
+```
