@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -22,7 +20,6 @@ func ReadConfig() (IConfig, error) {
 	cfg := &Config{
 		Plugins: make([]PluginConfig, len(plugins), len(plugins)),
 	}
-	fmt.Printf("%v", plugins)
 	for i, p := range plugins {
 		plugin := p.(map[interface{}]interface{})
 		config := PluginConfig{

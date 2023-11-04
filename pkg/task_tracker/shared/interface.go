@@ -21,8 +21,8 @@ var Handshake = plugin.HandshakeConfig{
 
 // PluginMap is the map of plugins we can dispense.
 var PluginMap = map[string]plugin.Plugin{
-	"tasktracker_grpc": &TaskTrackerGRPCPlugin{},
-	"tasktracker":      &TaskTrackerPlugin{},
+	"toggl_grpc": &TaskTrackerGRPCPlugin{},
+	"toggl":      &TaskTrackerPlugin{},
 }
 
 // This is the implementation of plugin.Plugin so we can serve/consume this.

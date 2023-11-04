@@ -1,11 +1,21 @@
 package main
 
 import (
-	plugConfig "godep.io/timemate/pkg/config"
-	"godep.io/timemate/pkg/time_tracker/shared"
+	"encoding/gob"
+	"time"
 
 	"github.com/hashicorp/go-plugin"
+	plugConfig "godep.io/timemate/pkg/config"
+	"godep.io/timemate/pkg/time_tracker"
+	"godep.io/timemate/pkg/time_tracker/shared"
 )
+
+func init() {
+	gob.Register(time.Time{})
+	gob.Register(time_tracker.TimeEntry{})
+	gob.Register(time_tracker.Project{})
+	gob.Register(time_tracker.Client{})
+}
 
 func main() {
 	config, err := plugConfig.ReadConfig()
@@ -23,9 +33,9 @@ func main() {
 	plugin.Serve(&plugin.ServeConfig{
 		HandshakeConfig: shared.Handshake,
 		Plugins: map[string]plugin.Plugin{
-			"toggl": &shared.TimeTrackerPlugin{Impl: impl},
+			//"toggl":      &shared.TimeTrackerPlugin{Impl: impl},
+			"toggl_grpc": &shared.TimeTrackerGRPCPlugin{Impl: impl},
 		},
-		// A non-nil value here enables gRPC serving for this plugin...
 		GRPCServer: plugin.DefaultGRPCServer,
 	})
 }

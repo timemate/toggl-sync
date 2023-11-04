@@ -11,7 +11,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Handshake is a common handshake that is shared by plugin and host.
 var Handshake = plugin.HandshakeConfig{
 	// This isn't required when using VersionedPlugins
 	ProtocolVersion:  1,
@@ -19,16 +18,12 @@ var Handshake = plugin.HandshakeConfig{
 	MagicCookieValue: "hello",
 }
 
-// PluginMap is the map of plugins we can dispense.
 var PluginMap = map[string]plugin.Plugin{
-	"timetracker_grpc": &TimeTrackerGRPCPlugin{},
-	"timetracker":      &TimeTrackerPlugin{},
+	"toggl_grpc": &TimeTrackerGRPCPlugin{},
+	"toggl":      &TimeTrackerPlugin{},
 }
 
-// This is the implementation of plugin.Plugin so we can serve/consume this.
 type TimeTrackerPlugin struct {
-	// Concrete implementation, written in Go. This is only used for plugins
-	// that are written in Go.
 	Impl time_tracker.ITimeTracker
 }
 
@@ -40,12 +35,8 @@ func (*TimeTrackerPlugin) Client(b *plugin.MuxBroker, c *rpc.Client) (interface{
 	return &RPCClient{client: c}, nil
 }
 
-// This is the implementation of plugin.GRPCPlugin so we can serve/consume this.
 type TimeTrackerGRPCPlugin struct {
-	// GRPCPlugin must still implement the Plugin interface
 	plugin.Plugin
-	// Concrete implementation, written in Go. This is only used for plugins
-	// that are written in Go.
 	Impl time_tracker.ITimeTracker
 }
 

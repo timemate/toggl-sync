@@ -9,16 +9,15 @@ import (
 	"golang.org/x/net/context"
 )
 
-// GRPCClient is an implementation of KV that talks over RPC.
 type GRPCClient struct{ client proto.TimeTrackerClient }
 
-func (m *GRPCClient) GetTimeEntries(start time.Time, stop time.Time) ([]time_tracker.TimeEntry, error) {
+func (m *GRPCClient) GetTimeEntries(start time.Time, stop time.Time) ([]time_tracker.ITimeEntry, error) {
 	resp, err := m.client.GetTimeEntries(context.Background(), &proto.GetTimeEntriesRequest{
 		Start: start.Format(time.RFC3339),
 		Stop:  stop.Format(time.RFC3339),
 	})
 
-	entries := make([]time_tracker.TimeEntry, 0)
+	entries := make([]time_tracker.ITimeEntry, 0)
 	for _, e := range resp.Entries {
 		start, err = time.Parse(time.RFC3339, e.Start)
 		if err != nil {
@@ -58,9 +57,7 @@ func (m *GRPCClient) GetTimeEntries(start time.Time, stop time.Time) ([]time_tra
 	return entries, err
 }
 
-// Here is the gRPC server that GRPCClient talks to.
 type GRPCServer struct {
-	// This is the real implementation
 	Impl time_tracker.ITimeTracker
 }
 

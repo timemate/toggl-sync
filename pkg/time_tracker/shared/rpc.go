@@ -7,7 +7,6 @@ import (
 	"godep.io/timemate/pkg/time_tracker"
 )
 
-// RPCClient is an implementation of KV that talks over RPC.
 type RPCClient struct{ client *rpc.Client }
 
 func (m *RPCClient) GetTimeEntries(start time.Time, stop time.Time) ([]time_tracker.ITimeEntry, error) {
@@ -19,10 +18,7 @@ func (m *RPCClient) GetTimeEntries(start time.Time, stop time.Time) ([]time_trac
 	return resp, err
 }
 
-// Here is the RPC server that RPCClient talks to, conforming to
-// the requirements of net/rpc
 type RPCServer struct {
-	// This is the real implementation
 	Impl time_tracker.ITimeTracker
 }
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"strconv"
 	"time"
 
@@ -23,7 +24,7 @@ const baseHost = "https://api.track.toggl.com/api/v8"
 
 func NewTogglTracker(config config.PluginConfig) (*TogglTracker, error) {
 	token := config.Config["token"]
-	var projects []string
+	//var projects []string
 	//p, ok := (params["projects"]).([]interface{})
 	//if ok {
 	//	projects = make([]string, 0)
@@ -40,7 +41,7 @@ func NewTogglTracker(config config.PluginConfig) (*TogglTracker, error) {
 		TimeEntryAPI: togglapi.NewTimeEntryAPI(baseHost, token),
 		ProjectAPI:   togglapi.NewProjectAPI(baseHost, token),
 		ClientAPI:    togglapi.NewClientAPI(baseHost, token),
-		projects:     projects,
+		projects:     make([]string, 0),
 	}, nil
 }
 
@@ -92,6 +93,7 @@ func (tg *TogglTracker) getClientsAndProjects() (clientsMap map[string]model.Cli
 }
 
 func (tg *TogglTracker) GetTimeEntries(start time.Time, end time.Time) ([]time_tracker.ITimeEntry, error) {
+	log.Printf("GetTimeEntries: %s - %s", start, end)
 	entries, err := tg.TimeEntryAPI.GetTimeEntries(start, end)
 	if err != nil {
 		return nil, err
