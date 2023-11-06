@@ -6,13 +6,11 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/exec"
 	"time"
 
+	plugConfig "godep.io/timemate/pkg/config"
+	pkgPlugin "godep.io/timemate/pkg/plugin"
 	"godep.io/timemate/pkg/time_tracker"
-	sharedTime "godep.io/timemate/pkg/time_tracker/shared"
-
-	"github.com/hashicorp/go-plugin"
 )
 
 func init() {
@@ -25,30 +23,17 @@ func init() {
 func main() {
 	log.SetOutput(io.Discard)
 
-	client := plugin.NewClient(&plugin.ClientConfig{
-		HandshakeConfig: sharedTime.Handshake,
-		Plugins:         sharedTime.PluginMap,
-		Cmd:             exec.Command("sh", "-c", os.Getenv("TOGGL_PLUGIN")),
-		AllowedProtocols: []plugin.Protocol{
-			plugin.ProtocolNetRPC,
-			plugin.ProtocolGRPC,
-		},
-	})
+	config, err := plugConfig.ReadConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	timeTracker, client, err := pkgPlugin.GetGRPCClient[time_tracker.ITimeTracker](config, os.Getenv("TOGGL_PLUGIN"), "toggl")
 	defer client.Kill()
-
-	rpcClient, err := client.Client()
 	if err != nil {
 		fmt.Println("Error:", err.Error())
 		os.Exit(1)
 	}
-
-	raw, err := rpcClient.Dispense("toggl_grpc")
-	if err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
-	}
-
-	timeTracker := raw.(time_tracker.ITimeTracker)
 	entries, err := timeTracker.GetTimeEntries(time.Now().Add(-24*7*time.Hour), time.Now())
 	log.Printf("Entries: %v\n", entries)
 	log.Printf("Error: %v\n", err)

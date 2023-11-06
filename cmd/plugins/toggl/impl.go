@@ -24,19 +24,6 @@ const baseHost = "https://api.track.toggl.com/api/v8"
 
 func NewTogglTracker(config config.PluginConfig) (*TogglTracker, error) {
 	token := config.Config["token"]
-	//var projects []string
-	//p, ok := (params["projects"]).([]interface{})
-	//if ok {
-	//	projects = make([]string, 0)
-	//	for _, pp := range p {
-	//		switch v := pp.(type) {
-	//		case int:
-	//			projects = append(projects, strconv.Itoa(v))
-	//		case string:
-	//			projects = append(projects, v)
-	//		}
-	//	}
-	//}
 	return &TogglTracker{
 		TimeEntryAPI: togglapi.NewTimeEntryAPI(baseHost, token),
 		ProjectAPI:   togglapi.NewProjectAPI(baseHost, token),

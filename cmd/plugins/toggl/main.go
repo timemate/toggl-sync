@@ -6,8 +6,8 @@ import (
 
 	"github.com/hashicorp/go-plugin"
 	plugConfig "godep.io/timemate/pkg/config"
+	pkgPlugin "godep.io/timemate/pkg/plugin"
 	"godep.io/timemate/pkg/time_tracker"
-	"godep.io/timemate/pkg/time_tracker/shared"
 )
 
 func init() {
@@ -17,12 +17,14 @@ func init() {
 	gob.Register(time_tracker.Client{})
 }
 
+const pluginName = "toggl"
+
 func main() {
 	config, err := plugConfig.ReadConfig()
 	if err != nil {
 		panic(err)
 	}
-	pluginConfig := config.FindPlugin("toggl")
+	pluginConfig := config.FindPlugin(pluginName)
 	if pluginConfig == nil {
 		panic("No plugin configuration found")
 	}
@@ -30,12 +32,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	m, err := pkgPlugin.GetPluginMap(config, pluginName, true, impl)
+	if err != nil {
+		panic("No plugin configuration found")
+	}
 	plugin.Serve(&plugin.ServeConfig{
-		HandshakeConfig: shared.Handshake,
-		Plugins: map[string]plugin.Plugin{
-			//"toggl":      &shared.TimeTrackerPlugin{Impl: impl},
-			"toggl_grpc": &shared.TimeTrackerGRPCPlugin{Impl: impl},
-		},
-		GRPCServer: plugin.DefaultGRPCServer,
+		HandshakeConfig: pkgPlugin.Handshake,
+		Plugins:         m,
+		GRPCServer:      plugin.DefaultGRPCServer,
 	})
 }
