@@ -3,14 +3,23 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"time"
 
 	plugConfig "godep.io/timemate/pkg/config"
 	pkgPlugin "godep.io/timemate/pkg/plugin"
+	"godep.io/timemate/pkg/task_tracker"
 	"godep.io/timemate/pkg/time_tracker"
+
+	"github.com/urfave/cli"
+)
+
+var (
+	// Populated by goreleaser during build
+	version = "master"
+	commit  = "?"
+	date    = ""
 )
 
 func init() {
@@ -18,23 +27,45 @@ func init() {
 	gob.Register(time_tracker.TimeEntry{})
 	gob.Register(time_tracker.Project{})
 	gob.Register(time_tracker.Client{})
+
+	gob.Register(task_tracker.Project{})
+	gob.Register(task_tracker.Task{})
 }
 
 func main() {
-	log.SetOutput(io.Discard)
+	app := cli.NewApp()
+	app.Version = fmt.Sprintf("%s (%s; %s)", version, commit, date)
+	app.Description = "Tiny service to sync time entries from toggl to jira"
+	app.Name = "timemate"
+	app.Copyright = "TimeMate © 2021-2023"
+	//log.SetOutput(io.Discard)
 
 	config, err := plugConfig.ReadConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	timeTracker, client, err := pkgPlugin.GetGRPCClient[time_tracker.ITimeTracker](config, os.Getenv("TOGGL_PLUGIN"), "toggl")
-	defer client.Kill()
-	if err != nil {
-		fmt.Println("Error:", err.Error())
-		os.Exit(1)
+	var timeTracker time_tracker.ITimeTracker
+	if impl, togglClient, err := pkgPlugin.GetGRPCClient(config, os.Getenv("TOGGL_PLUGIN"), "toggl"); err == nil {
+		defer togglClient.Kill()
+		timeTracker = impl.(time_tracker.ITimeTracker)
+	} else {
+		panic("Unexpected error")
 	}
+
+	var taskTracker task_tracker.ITaskTracker
+	if impl, jiraClient, err := pkgPlugin.GetGRPCClient(config, os.Getenv("JIRA_PLUGIN"), "jira"); err == nil {
+		defer jiraClient.Kill()
+		taskTracker = impl.(task_tracker.ITaskTracker)
+	} else {
+		panic("Unexpected error")
+	}
+
 	entries, err := timeTracker.GetTimeEntries(time.Now().Add(-24*7*time.Hour), time.Now())
-	log.Printf("Entries: %v\n", entries)
+	log.Printf("Entries: %v\n", len(entries))
+	log.Printf("Error: %v\n", err)
+
+	tasks, err := taskTracker.GetTasks([]string{"test-1"})
+	log.Printf("Tasks: %v\n", len(tasks))
 	log.Printf("Error: %v\n", err)
 }

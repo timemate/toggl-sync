@@ -1,18 +1,30 @@
 package main
 
 import (
+	"encoding/gob"
+	"time"
+
 	plugConfig "godep.io/timemate/pkg/config"
-	"godep.io/timemate/pkg/task_tracker/shared"
+	pkgPlugin "godep.io/timemate/pkg/plugin"
+	"godep.io/timemate/pkg/task_tracker"
 
 	"github.com/hashicorp/go-plugin"
 )
+
+func init() {
+	gob.Register(time.Time{})
+	gob.Register(task_tracker.Task{})
+	gob.Register(task_tracker.Project{})
+}
+
+const pluginName = "jira"
 
 func main() {
 	config, err := plugConfig.ReadConfig()
 	if err != nil {
 		panic(err)
 	}
-	pluginConfig := config.FindPlugin("jira")
+	pluginConfig := config.FindPlugin(pluginName)
 	if pluginConfig == nil {
 		panic("No plugin configuration found")
 	}
@@ -20,12 +32,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	m, err := pkgPlugin.GetPluginMap(config, pluginName, true, impl)
+	if err != nil {
+		panic("No plugin configuration found")
+	}
 	plugin.Serve(&plugin.ServeConfig{
-		HandshakeConfig: shared.Handshake,
-		Plugins: map[string]plugin.Plugin{
-			"jira": &shared.TaskTrackerPlugin{Impl: impl},
-		},
-		// A non-nil value here enables gRPC serving for this plugin...
-		GRPCServer: plugin.DefaultGRPCServer,
+		HandshakeConfig: pkgPlugin.Handshake,
+		Plugins:         m,
+		GRPCServer:      plugin.DefaultGRPCServer,
 	})
 }
