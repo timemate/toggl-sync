@@ -1,21 +1,25 @@
-package sync
+package main
 
 import (
+	"errors"
 	"log"
 
-	"github.com/andygrunwald/go-jira"
+	"godep.io/timemate/pkg/config"
+	"godep.io/timemate/pkg/task_tracker"
 	"godep.io/timemate/pkg/time_tracker"
+
+	"github.com/andygrunwald/go-jira"
 )
 
-type JiraSync struct {
+type JiraTracker struct {
 	api   *jira.Client
 	login string
 }
 
-func NewJiraSync(params map[interface{}]interface{}) (*JiraSync, error) {
-	login := (params["login"]).(string)
-	token := (params["token"]).(string)
-	url := (params["url"]).(string)
+func NewJiraTracker(config config.PluginConfig) (*JiraTracker, error) {
+	login := config.Config["login"]
+	token := config.Config["token"]
+	url := config.Config["url"]
 	tp := jira.BasicAuthTransport{
 		Username: login,
 		Password: token,
@@ -24,7 +28,7 @@ func NewJiraSync(params map[interface{}]interface{}) (*JiraSync, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &JiraSync{
+	return &JiraTracker{
 		api:   client,
 		login: login,
 	}, nil
@@ -47,17 +51,22 @@ func findWorklog(worklogs []jira.WorklogRecord, entry time_tracker.ITimeEntry) *
 	return nil
 }
 
-func (ji *JiraSync) Sync(tasks []Task) (err error) {
+func (ji *JiraTracker) GetTasks(ids []string) ([]task_tracker.ITask, error) {
+	return nil, errors.New("not implemented")
+}
+
+func (ji *JiraTracker) UpdateTasks(tasks []task_tracker.ITask) (err error) {
+	log.Printf("UpdateTasks: %v", tasks)
 	for _, t := range tasks {
-		log.Printf("Processing toggl task %s\n", t.Id)
-		worklog, _, err := ji.api.Issue.GetWorklogs(t.Id, jira.WithQueryOptions(&jira.AddWorklogQueryOptions{
+		log.Printf("Processing toggl task %s\n", t.GetId())
+		worklog, _, err := ji.api.Issue.GetWorklogs(t.GetId(), jira.WithQueryOptions(&jira.AddWorklogQueryOptions{
 			Expand: "properties",
 		}))
 		if err != nil {
 			log.Printf("Error occured: %s\n", err)
 			continue
 		}
-		for _, e := range t.entries {
+		for _, e := range t.GetEntries() {
 			w := findWorklog(worklog.Worklogs, e)
 			st := jira.Time(e.GetStart())
 			diff := e.GetStop().Sub(e.GetStart())
@@ -65,7 +74,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 			secondsToSave := int(diff.Seconds()) - (int(diff.Seconds()) % 60)
 			// do not perform update if we have the same values for time/description
 			if w != nil && w.Comment == e.GetDescription() && secondsToSave == w.TimeSpentSeconds {
-				log.Printf("Time entry \"%s\" of %s for task %s is unchanged. Skipping update...\n", e.GetDescription(), diff, t.Id)
+				log.Printf("Time entry \"%s\" of %s for task %s is unchanged. Skipping update...\n", e.GetDescription(), diff, t.GetId())
 				continue
 			}
 			record := &jira.WorklogRecord{
@@ -82,11 +91,11 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 				},
 			}
 			if w != nil {
-				_, _, err = ji.api.Issue.UpdateWorklogRecord(t.Id, w.ID, record)
+				_, _, err = ji.api.Issue.UpdateWorklogRecord(t.GetId(), w.ID, record)
 			} else {
-				_, _, err = ji.api.Issue.AddWorklogRecord(t.Id, record)
+				_, _, err = ji.api.Issue.AddWorklogRecord(t.GetId(), record)
 			}
-			log.Printf("Synchronized time entry \"%s\" of %s for task %s\n", e.GetDescription(), diff, t.Id)
+			log.Printf("Synchronized time entry \"%s\" of %s for task %s\n", e.GetDescription(), diff, t.GetId())
 		}
 	}
 	return err

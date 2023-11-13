@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package tasktracker;
+
+import "timetracker.proto";
+option go_package = "proto/";
+
+message Task {
+    message Project {
+        string id = 1;
+        string name = 2;
+    }
+
+    string id = 1;
+    repeated timetracker.TimeEntry entries = 2;
+    Project project = 3;
+}
+
+message GetTasksRequest {
+    repeated string ids = 1;
+}
+
+message GetTasksResponse {
+    repeated Task tasks = 1;
+}
+
+message UpdateTasksRequest {
+    repeated Task tasks = 1;
+}
+
+message UpdateTasksResponse {}
+
+service TaskTracker {
+    rpc GetTasks (GetTasksRequest) returns (GetTasksResponse) {}
+    rpc UpdateTasks (UpdateTasksRequest) returns (UpdateTasksResponse) {}
+}
+
