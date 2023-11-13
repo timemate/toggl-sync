@@ -65,7 +65,7 @@ func main() {
 	log.Printf("Entries: %v\n", len(entries))
 	log.Printf("Error: %v\n", err)
 
-	tasks, err := taskTracker.GetTasks([]string{"test-1"})
-	log.Printf("Tasks: %v\n", len(tasks))
+	var v = make([]task_tracker.ITask, 0)
+	err = taskTracker.UpdateTasks(v)
 	log.Printf("Error: %v\n", err)
 }

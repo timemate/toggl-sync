@@ -11,20 +11,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-// Handshake is a common handshake that is shared by plugin and host.
-var Handshake = plugin.HandshakeConfig{
-	// This isn't required when using VersionedPlugins
-	ProtocolVersion:  1,
-	MagicCookieKey:   "BASIC_PLUGIN",
-	MagicCookieValue: "hello",
-}
-
-// PluginMap is the map of plugins we can dispense.
-var PluginMap = map[string]plugin.Plugin{
-	"toggl_grpc": &TaskTrackerGRPCPlugin{},
-	"toggl":      &TaskTrackerPlugin{},
-}
-
 // This is the implementation of plugin.Plugin so we can serve/consume this.
 type TaskTrackerPlugin struct {
 	// Concrete implementation, written in Go. This is only used for plugins

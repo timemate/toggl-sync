@@ -56,6 +56,7 @@ func (ji *JiraTracker) GetTasks(ids []string) ([]task_tracker.ITask, error) {
 }
 
 func (ji *JiraTracker) UpdateTasks(tasks []task_tracker.ITask) (err error) {
+	log.Printf("UpdateTasks: %v", tasks)
 	for _, t := range tasks {
 		log.Printf("Processing toggl task %s\n", t.GetId())
 		worklog, _, err := ji.api.Issue.GetWorklogs(t.GetId(), jira.WithQueryOptions(&jira.AddWorklogQueryOptions{

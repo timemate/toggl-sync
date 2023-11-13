@@ -4,10 +4,11 @@ import (
 	"encoding/gob"
 	"time"
 
-	"github.com/hashicorp/go-plugin"
 	plugConfig "godep.io/timemate/pkg/config"
 	pkgPlugin "godep.io/timemate/pkg/plugin"
 	"godep.io/timemate/pkg/time_tracker"
+
+	"github.com/hashicorp/go-plugin"
 )
 
 func init() {
