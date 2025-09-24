@@ -1,6 +1,6 @@
 module godep.io/timemate
 
-go 1.19
+go 1.22
 
 require (
 	github.com/andreaskoch/togglapi v0.4.2

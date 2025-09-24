@@ -15,8 +15,9 @@ func (t trackedTimeClient) Name() string {
 }
 
 type trackedTimeProject struct {
-	id   string
-	name string
+	id       string
+	name     string
+	clientId string
 }
 
 func (t trackedTimeProject) Id() string {
@@ -24,6 +25,9 @@ func (t trackedTimeProject) Id() string {
 }
 func (t trackedTimeProject) Name() string {
 	return t.name
+}
+func (t trackedTimeProject) ClientId() string {
+	return t.clientId
 }
 
 type trackedTime struct {

@@ -9,6 +9,7 @@ type Client interface {
 
 type Project interface {
 	Id() string
+	ClientId() string
 	Name() string
 }
 

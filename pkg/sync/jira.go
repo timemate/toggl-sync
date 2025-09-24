@@ -53,6 +53,7 @@ func (ji *JiraSync) Sync(tasks []Task) (err error) {
 		worklog, _, err := ji.api.Issue.GetWorklogs(t.Id, jira.WithQueryOptions(&jira.AddWorklogQueryOptions{
 			Expand: "properties",
 		}))
+		// TODO: filter worklogs only from current account by worklog.Author.EmailAddress == ji.login
 		if err != nil {
 			log.Printf("Error occured: %s\n", err)
 			continue
